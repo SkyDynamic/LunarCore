@@ -117,6 +117,8 @@ public class GachaService extends BaseGameService {
     }
 
     public synchronized void doPulls(Player player, int gachaId, int times) {
+        long timestamp = System.currentTimeMillis();
+        
         // Sanity checks
         if (times != 10 && times != 1) return;
         
@@ -225,6 +227,19 @@ public class GachaService extends BaseGameService {
         int stardust = 0, starglitter = 0;
 
         for (int itemId : wonItems) {
+            // Save to database
+            GameItem _item = new GameItem(itemId);
+            new GachaDetail(
+                player.getUid(), 
+                gachaId,
+                banner.getGachaType().getId(),
+                itemId,
+                1,
+                timestamp,
+                _item.getItemMainType().getVal(),
+                _item.getItemId()
+            ).save();
+            
             ItemExcel itemData = GameData.getItemExcelMap().get(itemId);
             if (itemData == null) {
                 continue;
